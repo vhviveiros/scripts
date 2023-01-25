@@ -25,3 +25,5 @@ def backup_folder(local_folder: str, backup_folder: str) -> None:
 
 backup_folder(local_mysql, backup_mysql)
 backup_folder(local_redis, backup_redis)
+
+#test backup_folder function
