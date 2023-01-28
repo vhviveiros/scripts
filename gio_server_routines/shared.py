@@ -7,11 +7,11 @@ def start_container(container):
     subprocess.run(["docker", "start", container])
 
 
-def __json_file_path() -> str:
+def get_local_json_file_path(file_name: str) -> str:
     # get the path of the current script
     script_dir = os.path.dirname(os.path.abspath(__file__))
     # construct the path of the json file
-    return os.path.join(script_dir, "containers.json")
+    return os.path.join(script_dir, file_name)
 
 
 def stop_all_containers(save=True):
@@ -19,7 +19,7 @@ def stop_all_containers(save=True):
     container_ids = output.stdout.decode().strip().split("\n")
 
     if (save):
-        with open(__json_file_path(), "w") as f:
+        with open(get_local_json_file_path(), "w") as f:
             json.dump(container_ids, f)
 
     for container_id in container_ids:
@@ -27,7 +27,7 @@ def stop_all_containers(save=True):
 
 
 def start_stopped_containers():
-    with open(__json_file_path()) as f:
+    with open(get_local_json_file_path("containers.json")) as f:
         container_ids = json.load(f)
 
     for container_id in container_ids:

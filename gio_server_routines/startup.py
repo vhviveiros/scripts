@@ -1,14 +1,14 @@
-from shared import subprocess, start_container, stop_all_containers
+from shared import start_container, stop_all_containers, subprocess, json, get_local_json_file_path
 
-processes_to_finish = ["QuickLook.exe", "Taskmgr.exe", "WhatsApp.exe",
-                       "Video.UI.exe", "msedgewebview2.exe", "msrdc.exe", "TranslucentTB.exe", "hide_desktop_icons.exe", "GoogleDriveFS.exe", "PhoneExperienceHost.exe", "CC_Engine_x64.exe", "PowerToys.exe", "wallpaper64.exe", "MSI.CentralServer.exe", "MSI_Central_Service.exe", "MSI_Companion_Service.exe", "OfficeClickToRun.exe", "LEDKeeper2.exe", "spd.exe", "LEDKeeper2.exe"]
+with open(get_local_json_file_path("processes_to_finish.json")) as f:
+    processes_to_finish = json.load(f)
 
 containers_to_start = ["mysql", "redis", "loginserver", "nodeserver", "dispatch", "dbgate", "gameserver", "gateserver"]
 
 
 def kill_process(name):
     # Get a list of all running processes with the given name
-    p = subprocess.run(["/mnt/c/Windows/System32/taskkill.exe", "/FI", "imagename eq " + name], stdout=subprocess.PIPE)
+    p = subprocess.run(["/mnt/c/Windows/System32/tasklist.exe", "/fi", "IMAGENAME eq " + name], stdout=subprocess.PIPE)
 
     # Extract the process IDs from the output
     pids = [line.split()[1] for line in p.stdout.decode().splitlines()[3:]]
