@@ -5,6 +5,8 @@ with open(get_local_json_file_path("processes_to_finish.json")) as f:
 
 containers_to_start = ["mysql", "redis", "loginserver", "nodeserver", "dispatch", "dbgate", "gameserver", "gateserver"]
 
+"""This function kills the process with the given name. It first runs a tasklist command to get a list of all running processes with the given name, then extracts the process IDs from the output, and finally kills each process using a taskkill command."""
+
 
 def kill_process(name):
     # Get a list of all running processes with the given name
