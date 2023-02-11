@@ -9,6 +9,10 @@ redis_folder = root_folder + '/data/redis'
 logs_folder = root_folder + '/logs'
 log_file = os.path.dirname(os.path.abspath(__file__)) + '/scripts_logs.log'
 
+# Those should not be killed
+gio_containers_ids = ["5ba91c23b08c", "9d798e153d02", "365577a49ae6", "4afa6a7964ff",
+                      "7532be99d3ed", "0e3f5838538b", "59d264589438", "cfd9bc6d3dac"]
+
 
 def get_local_json_file_path(file_name: str) -> str:
     """Takes a file name as an argument and returns the path of the json file. It does this by getting the path of the current script and joining it with the file name."""
@@ -24,11 +28,15 @@ def stop_container(container_id):
 
 
 def stop_all_containers(save=True):
-    """Stops all containers in the system, optionally saving their ids in a json file. It does this by running a docker ps -q command to get all container ids, then running a docker stop command for each one in parallel using concurrent.futures.ThreadPoolExecutor()."""
+    """Stops all containers, except for the currently running gio servers. If the save parameter is set to True, it saves the container IDs to a JSON file. It uses a ThreadPoolExecutor to submit a stop_container function for each container ID in the list."""
     output = subprocess.run(["docker", "ps", "-q"], capture_output=True)
     container_ids = output.stdout.decode().strip().split("\n")
 
-    if (save):
+    # Currently running gio servers mustnt be stopped
+    container_ids = [item for item in container_ids if item not in gio_containers_ids]
+
+    # An empty container_ids list could mean that containers are already running, which means gio is active
+    if (save and len(container_ids) != 0):
         with open(get_local_json_file_path("containers.json"), "w") as f:
             json.dump(container_ids, f)
 
