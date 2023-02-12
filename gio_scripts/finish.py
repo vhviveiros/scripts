@@ -1,7 +1,7 @@
 import sys
 from shared import stop_all_containers, start_stopped_containers, subprocess
 
-stop_all_containers(save=False)
+stop_all_containers(save=False, kill_gio=True)
 start_stopped_containers()
 subprocess.run(["netsh.exe", "winhttp", "reset", "proxy"])
 if (sys.argv.__contains__('-s')):

@@ -27,13 +27,14 @@ def stop_container(container_id):
     subprocess.run(["docker", "stop", container_id])
 
 
-def stop_all_containers(save=True):
-    """Stops all containers, except for the currently running gio servers. If the save parameter is set to True, it saves the container IDs to a JSON file. It uses a ThreadPoolExecutor to submit a stop_container function for each container ID in the list."""
+def stop_all_containers(save=True, kill_gio=False):
+    """Stops all containers. If the "save" argument is set to True, the list of container IDs will be saved in a JSON file. If the "kill_gio" argument is set to False, any currently running gio servers will not be stopped. The function uses a ThreadPoolExecutor to concurrently stop each container in the list of container IDs."""
     output = subprocess.run(["docker", "ps", "-q"], capture_output=True)
     container_ids = output.stdout.decode().strip().split("\n")
 
-    # Currently running gio servers mustnt be stopped
-    container_ids = [item for item in container_ids if item not in gio_containers_ids]
+    if (not kill_gio):
+    	# Currently running gio servers mustnt be stopped
+        container_ids = [item for item in container_ids if item not in gio_containers_ids]
 
     # An empty container_ids list could mean that containers are already running, which means gio is active
     if (save and len(container_ids) != 0):
