@@ -1,6 +1,6 @@
-from shared import start_container, stop_all_containers, subprocess, json, get_local_json_file_path
+from shared import start_container, stop_all_containers, subprocess, json, get_local_file_path
 
-with open(get_local_json_file_path("processes_to_finish.json")) as f:
+with open(get_local_file_path("processes_to_finish.json")) as f:
     processes_to_finish = json.load(f)
 
 containers_to_start = ["mysql", "redis", "loginserver", "nodeserver", "dispatch", "dbgate", "gameserver", "gateserver"]

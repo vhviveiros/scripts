@@ -1,11 +1,11 @@
 import subprocess
 import datetime
-from shared import mysql_folder, redis_folder, run_with_logging
+from shared import mysql_folder, redis_folder, run_with_logging, config
 
 
-backup_root = '/mnt/d/GAME/Genshin Impact GIO'
-backup_mysql = backup_root + '/backup/mysql/'
-backup_redis = backup_root + '/backup/redis/'
+backup_root = config['backup_root']
+backup_mysql = backup_root + config['backup_mysql']
+backup_redis = backup_root + config['backup_redis']
 
 
 def backup_folder(local_folder: str, backup_folder: str) -> None:
@@ -13,12 +13,14 @@ def backup_folder(local_folder: str, backup_folder: str) -> None:
     def runner(f):
         f.write(f"[EVENT] [{datetime.datetime.now()}] Starting Backup Process for {local_folder}...\n")
         try:
-            subprocess.run(["rsync", "-av", "--delete", "--exclude", "mysql.sock", local_folder, backup_folder], check=True)
+            subprocess.run(["rsync", "-av", "--delete", "--exclude",
+                           "mysql.sock", local_folder, backup_folder], check=True)
         except subprocess.CalledProcessError as e:
             f.write(f"[ERROR] [{datetime.datetime.now()}] Backup Process for {local_folder} has failed. Error: {e}\n")
         finally:
             f.write(f"[EVENT] [{datetime.datetime.now()}] Backup Process for {local_folder} finished.\n")
     run_with_logging(runner)
+
 
 backup_folder(mysql_folder, backup_mysql)
 backup_folder(redis_folder, backup_redis)
