@@ -1,7 +1,7 @@
 import subprocess
 
 
-def get_process_ids(name):
+def get_process_ids(name) -> list[str]:
     # Get a list of all running processes with the given name
     p = subprocess.run(["/mnt/c/Windows/System32/tasklist.exe", "/fi", "IMAGENAME eq " + name], stdout=subprocess.PIPE)
 
@@ -19,4 +19,5 @@ def kill_processes(names):
     for p in names:
         kill_process(p)
 
-#TODO: kill wsl
+def kill_wsl():
+    subprocess.run(["cmd.exe", "wsl", "--shutdown"])
